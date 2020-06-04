@@ -10,8 +10,8 @@ geometry_msgs::Twist Roomba::data = nullptr;
 
 Roomba::Roomba(void){
   cmd_vel_pub = n.advertise<geometry_msgs::Twist>("cmd_vel", 1);
-  bumper_sub = n.subscribe("bumper", 1, Roomba::bumperCallback);
-  cliff_sub = n.subscribe("cliff", 1, Roomba::cliffCallback);
+//  bumper_sub = n.subscribe("bumper", 1, Roomba::bumperCallback);
+//  cliff_sub = n.subscribe("cliff", 1, Roomba::cliffCallback);
 
   data.linear.x = 0;
   data.angular.z = 0;
@@ -51,6 +51,7 @@ void Roomba::run(void){
        * in the constructor above.
        */
       // chatter_pub.publish(msg);
+
     cmd_vel_pub.publish(data);
 
     ros::spinOnce();
