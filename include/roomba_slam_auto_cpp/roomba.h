@@ -9,6 +9,7 @@ public:
   ros::NodeHandle n;
 
   ros::Publisher cmd_vel_pub;
+
   ros::Subscriber bumper_sub;
   ros::Subscriber cliff_sub;
 
