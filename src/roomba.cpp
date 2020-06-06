@@ -1,24 +1,9 @@
 #include "roomba_slam_auto_cpp/roomba.h"
-/*
-ros::Publisher Roomba::cmd_vel_pub = nullptr;
-ros::Subscriber Roomba::bumper_sub = nullptr;
-ros::Subscriber Roomba::cliff_sub = nullptr;
-ca_msgs::Bumper Roomba::bumper_values = nullptr;
-ca_msgs::Cliff Roomba::cliff_values = nullptr;
-geometry_msgs::Twist Roomba::data = nullptr;
-*/
-
 
 Roomba::Roomba(void){
   cmd_vel_pub = n.advertise<geometry_msgs::Twist>("cmd_vel", 1);
   bumper_sub = n.subscribe("bumper", 1, &Roomba::bumperCallback, this);
   cliff_sub = n.subscribe("cliff", 1, &Roomba::cliffCallback, this);
-
-//  bumper_sub = n.subscribe("bumper", 1, [this](const ca_msgs::Bumper::ConstPtr& msg){
-//    this->bumper_values = *msg;
-//    ROS_INFO("light_signal_right: [%d]", msg->light_signal_right);
-//    }
-//  );
 
   data.linear.x = 0;
   data.angular.z = 0;
