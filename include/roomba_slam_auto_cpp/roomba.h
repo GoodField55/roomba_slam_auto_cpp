@@ -52,15 +52,15 @@ private:
   unsigned int roomba_status;	// roomba proces status
   int counter;			// for process time count
 
-  int x_lo;			// linear low speed(m/sec)
-  int x_hi;			// linear high speed(m/sec)
-  int x_start;                  // linear initial speed(m/sec)
+  float x_lo;			// linear low speed(m/sec)
+  float x_hi;			// linear high speed(m/sec)
+  float x_start;                  // linear initial speed(m/sec)
 
-  int accel_step;		// linear speed accel step(m/sec)
+  float accel_step;		// linear speed accel step(m/sec)
   bool under_accel;		// true : under accel
 
-  int z_lo;			// angular low speed(rad/sec)
-  int z_hi;			// angular high speed(rad/sec)
+  float z_lo;			// angular low speed(rad/sec)
+  float z_hi;			// angular high speed(rad/sec)
 
   int goal_bumper_back;		// counts to goal(back)
   int goal_bumper_turn;		// counts to goal(turn)
@@ -69,9 +69,9 @@ private:
   int goal_cliff_front_back;    // counts to goal(cliff_front back)
   int goal_cliff_front_turn;    // counts to goal(cliff_front turn)
 
-  int bumper_signal_threshold;		// bumper signal comparate level
-  int bumper_signal_front_threshold; 	// bumper signal front comparate level
-  int bumper_signal_center_threshold; 	// bumper signal center comparate level
+  float bumper_signal_threshold;		// bumper signal comparate level
+  float bumper_signal_front_threshold; 	// bumper signal front comparate level
+  float bumper_signal_center_threshold; 	// bumper signal center comparate level
 
   int loop_hz;			// loop cycle(hz)
   int boost;			// boost loop cycle
