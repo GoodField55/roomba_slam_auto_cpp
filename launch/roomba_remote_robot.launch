@@ -14,9 +14,26 @@
 
   <node name="ca_driver" pkg="ca_driver" type="ca_driver" output="screen">
     <rosparam command="load" file="$(arg config)" />
-    <param name="robot_model" value="CREATE_2" />
   </node>
 
-  <node pkg="roomba_slam_auto_cpp" name="roomba" type="roomba" required="true" />
-
+  <node pkg="roomba_slam_auto_cpp" name="roomba" type="roomba" required="true">
+    <param name="robot_model" value="CREATE_2" />
+    <param name="loop_hz_origin" value="10" />
+    <param name="boost" value="1" />
+    <param name="x_hi" value="0.2" />
+    <param name="x_lo" value="0.05" />
+    <param name="x_start" value="0.01" />
+    <param name="accel_step" value="0.01" />
+    <param name="z_hi_origin" value="60.0" />
+    <param name="z_lo_origin" value="30.0" />
+    <param name="bumper_back_length" value="0.02" />
+    <param name="cliff_back_length" value="0.05" />
+    <param name="cliff_front_back_length" value="0.05" />
+    <param name="bumper_turn_angle" value="40.0" />
+    <param name="cliff_turn_angle" value="70.0" />
+    <param name="cliff_front_turn_angle" value="160.0" />
+    <param name="bumper_signal_threshold" value="200" />
+    <param name="bumper_signal_front_threshold" value="150" />
+    <param name="bumper_signal_center_threshold" value="100" />
+  </node>
 </launch>

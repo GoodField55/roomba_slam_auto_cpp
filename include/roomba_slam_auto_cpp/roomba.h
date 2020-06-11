@@ -37,7 +37,8 @@
 
 class Roomba{
 private:
-  ros::NodeHandle n;
+  ros::NodeHandle n_;
+  ros::NodeHandle pn_;
 
   ros::Publisher cmd_vel_pub;
 
@@ -61,6 +62,15 @@ private:
 
   float z_lo;			// angular low speed(rad/sec)
   float z_hi;			// angular high speed(rad/sec)
+  float z_lo_origin;		// angular low speed(degree/sec)
+  float z_hi_origin;            // angular high speed(degree/sec)
+
+  float bumper_back_length;     	// bumper back length (m)
+  float cliff_back_length;     		// cliff back length (m)
+  float cliff_front_back_length;     	// cliff front back length (m)
+  float bumper_turn_angle;             	// bumper turn angle (degree)
+  float cliff_turn_angle;               // cliff turn angle (degree)
+  float cliff_front_turn_angle;         // cliff front turn angle (degree)
 
   int goal_bumper_back;		// counts to goal(back)
   int goal_bumper_turn;		// counts to goal(turn)
@@ -73,7 +83,8 @@ private:
   float bumper_signal_front_threshold; 	// bumper signal front comparate level
   float bumper_signal_center_threshold; 	// bumper signal center comparate level
 
-  int loop_hz;			// loop cycle(hz)
+  int loop_hz_origin;
+  int loop_hz;			// loop cycle(hz) = loop_hz_origin * boost
   int boost;			// boost loop cycle
 
 public:
@@ -82,7 +93,7 @@ public:
   bool wall_detect( void );
   bool back_turn( int sensor, int position );
   void run(void);
-  Roomba(void);
+  explicit Roomba(ros::NodeHandle& n);
 
 };
 

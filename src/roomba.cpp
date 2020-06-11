@@ -1,9 +1,12 @@
 #include "roomba_slam_auto_cpp/roomba.h"
 
-Roomba::Roomba(void){
-  cmd_vel_pub = n.advertise<geometry_msgs::Twist>("cmd_vel", 1);
-  bumper_sub = n.subscribe("bumper", 1, &Roomba::bumperCallback, this);
-  cliff_sub = n.subscribe("cliff", 1, &Roomba::cliffCallback, this);
+Roomba::Roomba(ros::NodeHandle& n)
+  : n_(n),
+    pn_("~")
+{
+  cmd_vel_pub = n_.advertise<geometry_msgs::Twist>("cmd_vel", 1);
+  bumper_sub = n_.subscribe("bumper", 1, &Roomba::bumperCallback, this);
+  cliff_sub = n_.subscribe("cliff", 1, &Roomba::cliffCallback, this);
 
   data.linear.x = 0;
   data.angular.z = 0;
@@ -109,7 +112,7 @@ bool Roomba::back_turn( int sensor, int position ){
  
   if ( ( sensor == ROOMBA_CLIFF ) && ( ! ( roomba_status & ROOMBA_CLIFF )) && sensor_value ){	// first time of cliff sensor on
     roomba_status = 0;	// clear roomba_status for going to emergncy cliff process
-    ROS_INFO("back_turn:000 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
+    //ROS_INFO("back_turn:000 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
   }
 
   if ( ( sensor_value && (roomba_status == 0) ) ||				// first time of sensor on
@@ -117,91 +120,100 @@ bool Roomba::back_turn( int sensor, int position ){
     if ( ! ( (roomba_status & sensor) && (roomba_status & position) ) ){	// first time of specified sensor on
       roomba_status = sensor | position;  // set sensor flag and clear another flag
       counter = 0;
-      ROS_INFO("back_turn:001 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
+      //ROS_INFO("back_turn:001 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
     }
-    ROS_INFO("back_turn:002 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
+    //ROS_INFO("back_turn:002 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
 
     if ( (roomba_status & ROOMBA_PHASE) == 0 ){                                // under back process
-      ROS_INFO("back_turn:003 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
+      //ROS_INFO("back_turn:003 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
 
       if ( counter == 0 ){        // first time of sensor back
         under_accel = false;
         roomba_status |= ROOMBA_BACK;         // set back flag
         roomba_status &= ~ROOMBA_TURN;        // clear turn flag
-        ROS_INFO("back_turn:004 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
+        //ROS_INFO("back_turn:004 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
       }
       data.linear.x = x;
       data.angular.z = 0;
       counter++;
-      ROS_INFO("back_turn:005 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
+      //ROS_INFO("back_turn:005 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
       if ( counter > goal_back ){ 			// stop backward
         data.linear.x = 0;
         data.angular.z = 0;
         roomba_status++;        // increese phase
         counter = 0;
-        ROS_INFO("back_turn:006 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
+        //ROS_INFO("back_turn:006 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
       }
     }else{                                                                      // under turn process
-      ROS_INFO("back_turn:013 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
+      //ROS_INFO("back_turn:013 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
 
       if ( counter == 0 ){                                    // first time of sensor turn
         under_accel = false;
         roomba_status |= ROOMBA_TURN;         // set turn flag
         roomba_status &= ~ROOMBA_BACK;        // clear back flag
-        ROS_INFO("back_turn:014 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
+        //ROS_INFO("back_turn:014 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
       }
       data.linear.x = 0;
       data.angular.z = z;
       counter++;
-      ROS_INFO("back_turn:015 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
+      //ROS_INFO("back_turn:015 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
       if ( counter > goal_turn ){ 		// stop turn
         data.linear.x = 0;
         data.angular.z = 0;
         roomba_status = 0;			// clear roomba_status
         counter = 0;
-        ROS_INFO("back_turn:016 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
+        //ROS_INFO("back_turn:016 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
       }
     }
     return true;
   }else{
     //roomba_status = 0;				// clear roomba_status
-    ROS_INFO("back_turn:007 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
+    //ROS_INFO("back_turn:007 status = %04x, counter = %3d, sensor = %04x, position = %04x, sensor_value = %d", roomba_status, counter, sensor , position, sensor_value);
     return false;
   }
 }
 
 void Roomba::run(void){
-  boost = 10;
-  loop_hz = 10 * boost;	//boost x10
+
+  pn_.param<int>("loop_hz_origin", loop_hz_origin, 10);
+  pn_.param<int>("boost", boost, 10);
+  pn_.param<float>("x_hi", x_hi, 0.2);
+  pn_.param<float>("x_lo", x_lo, 0.05);
+  pn_.param<float>("x_start", x_start, 0.01);
+  pn_.param<float>("accel_step", accel_step, 0.01);
+  pn_.param<float>("z_hi_origin", z_hi_origin, 90.0);
+  pn_.param<float>("z_lo_origin", z_lo_origin, 45.0);
+  pn_.param<float>("bumper_back_length", bumper_back_length, 0.02);
+  pn_.param<float>("cliff_back_length", cliff_back_length, 0.05);
+  pn_.param<float>("cliff_front_back_length", cliff_front_back_length, 0.05);
+  pn_.param<float>("bumper_turn_angle", bumper_turn_angle, 80.0);
+  pn_.param<float>("cliff_turn_angle", cliff_turn_angle, 80.0);
+  pn_.param<float>("cliff_front_turn_angle", cliff_front_turn_angle, 110.0);
+  pn_.param<float>("bumper_signal_threshold", bumper_signal_threshold, 100);
+  pn_.param<float>("bumper_signal_front_threshold", bumper_signal_front_threshold, 150);
+  pn_.param<float>("bumper_signal_center_threshold", bumper_signal_center_threshold, 200);
+
+  loop_hz = loop_hz_origin * boost;
   ros::Rate loop_rate(loop_hz);
-
-  x_hi = 0.2;
-  x_lo = 0.05;
-  x_start = 0.01;
-  accel_step = 0.01 / (float)boost;
-
   data.linear.x = x_start;
   under_accel = false;
-  
-  z_hi = M_PI / 4.0;
-  z_lo = M_PI / 8.0;
+  z_hi = M_PI * z_hi_origin / 360.0;
+  z_lo = M_PI * z_lo_origin / 360.0;
   data.angular.z = z_hi;
-  
-  goal_bumper_back = (int)(loop_hz * 0.02 / x_lo);		// counts to 0.02m
-  goal_bumper_turn = (int)(loop_hz * M_PI / 4.5 / z_hi);	// counts to 80degree
 
-  goal_cliff_back = (int)(loop_hz * 0.05 / x_lo);             // counts to 0.05m
-  goal_cliff_turn = (int)(loop_hz * M_PI / 4.5 / z_hi);       // counts to 80degree
+  goal_bumper_back = (int)(loop_hz * bumper_back_length / x_lo);              // counts to 0.02m
+  goal_bumper_turn = (int)(loop_hz * bumper_turn_angle / z_hi_origin );        // counts to 80degree
 
-  goal_cliff_front_back = (int)(loop_hz * 0.05 / x_lo);             // counts to 0.05m
-  goal_cliff_front_turn = (int)(loop_hz * M_PI / 3.3 / z_hi);       // counts to 110degree
+  goal_cliff_back = (int)(loop_hz * cliff_back_length / x_lo);             // counts to 0.05m
+  goal_cliff_turn = (int)(loop_hz * cliff_turn_angle / z_hi_origin);       // counts to 80degree
 
-  bumper_signal_threshold = 100;	// bumper signal comparate level
-  bumper_signal_front_threshold = 150;	// bumper signal front comparate level
-  bumper_signal_center_threshold = 200;	// bumper signal center comparate level
+  goal_cliff_front_back = (int)(loop_hz * cliff_front_back_length / x_lo);             // counts to 0.05m
+  goal_cliff_front_turn = (int)(loop_hz * cliff_front_turn_angle / z_hi_origin);       // counts to 110degree
 
   roomba_status = 0;
   counter = 0;
+
+  ROS_INFO("z_hi = %5.2f, z_hi_origin = %5.2f, goal_bumper_turn = %d", z_hi, z_hi_origin, goal_bumper_turn);
 
   while (ros::ok()){
 
@@ -247,8 +259,9 @@ void Roomba::run(void){
 int main(int argc, char **argv){
 
   ros::init(argc, argv, "roomba");
+  ros::NodeHandle n;
 
-  Roomba roomba;
+  Roomba roomba(n);
   roomba.run();
 
   return 0;
