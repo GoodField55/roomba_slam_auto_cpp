@@ -62,8 +62,8 @@ private:
 
   float z_lo;			// angular low speed(rad/sec)
   float z_hi;			// angular high speed(rad/sec)
-  float z_lo_origin;		// angular low speed(degree/sec)
-  float z_hi_origin;            // angular high speed(degree/sec)
+  float z_lo_degree;		// angular low speed(degree/sec)
+  float z_hi_degree;            // angular high speed(degree/sec)
 
   float bumper_back_length;     	// bumper back length (m)
   float cliff_back_length;     		// cliff back length (m)
@@ -83,9 +83,9 @@ private:
   float bumper_signal_front_threshold; 	// bumper signal front comparate level
   float bumper_signal_center_threshold; 	// bumper signal center comparate level
 
-  int loop_hz_origin;
-  int loop_hz;			// loop cycle(hz) = loop_hz_origin * boost
-  int boost;			// boost loop cycle
+  float loop_hz_origin;
+  float loop_hz;			// loop cycle(hz) = loop_hz_origin * boost
+  float boost;			// boost loop cycle
 
 public:
   void bumperCallback(const ca_msgs::Bumper::ConstPtr& msg);

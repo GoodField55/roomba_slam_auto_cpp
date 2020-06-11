@@ -175,14 +175,14 @@ bool Roomba::back_turn( int sensor, int position ){
 
 void Roomba::run(void){
 
-  pn_.param<int>("loop_hz_origin", loop_hz_origin, 10);
-  pn_.param<int>("boost", boost, 10);
+  pn_.param<float>("loop_hz_origin", loop_hz_origin, 10.0);
+  pn_.param<float>("boost", boost, 10.0);
   pn_.param<float>("x_hi", x_hi, 0.2);
   pn_.param<float>("x_lo", x_lo, 0.05);
   pn_.param<float>("x_start", x_start, 0.01);
   pn_.param<float>("accel_step", accel_step, 0.01);
-  pn_.param<float>("z_hi_origin", z_hi_origin, 90.0);
-  pn_.param<float>("z_lo_origin", z_lo_origin, 45.0);
+  pn_.param<float>("z_hi_degree", z_hi_degree, 90.0);
+  pn_.param<float>("z_lo_degree", z_lo_degree, 45.0);
   pn_.param<float>("bumper_back_length", bumper_back_length, 0.02);
   pn_.param<float>("cliff_back_length", cliff_back_length, 0.05);
   pn_.param<float>("cliff_front_back_length", cliff_front_back_length, 0.05);
@@ -197,38 +197,40 @@ void Roomba::run(void){
   ros::Rate loop_rate(loop_hz);
   data.linear.x = x_start;
   under_accel = false;
-  z_hi = M_PI * z_hi_origin / 360.0;
-  z_lo = M_PI * z_lo_origin / 360.0;
+  z_hi = M_PI * z_hi_degree / 360.0;
+  z_lo = M_PI * z_lo_degree / 360.0;
   data.angular.z = z_hi;
 
   goal_bumper_back = (int)(loop_hz * bumper_back_length / x_lo);              // counts to 0.02m
-  goal_bumper_turn = (int)(loop_hz * bumper_turn_angle / z_hi_origin );        // counts to 80degree
+  goal_bumper_turn = (int)(loop_hz * bumper_turn_angle / z_hi_degree );        // counts to 80degree
 
   goal_cliff_back = (int)(loop_hz * cliff_back_length / x_lo);             // counts to 0.05m
-  goal_cliff_turn = (int)(loop_hz * cliff_turn_angle / z_hi_origin);       // counts to 80degree
+  goal_cliff_turn = (int)(loop_hz * cliff_turn_angle / z_hi_degree);       // counts to 80degree
 
   goal_cliff_front_back = (int)(loop_hz * cliff_front_back_length / x_lo);             // counts to 0.05m
-  goal_cliff_front_turn = (int)(loop_hz * cliff_front_turn_angle / z_hi_origin);       // counts to 110degree
+  goal_cliff_front_turn = (int)(loop_hz * cliff_front_turn_angle / z_hi_degree);       // counts to 110degree
 
   roomba_status = 0;
   counter = 0;
 
-  ROS_INFO("z_hi = %5.2f, z_hi_origin = %5.2f, goal_bumper_turn = %d", z_hi, z_hi_origin, goal_bumper_turn);
+  ROS_INFO("x_hi = %5.2f, x_start = %5.2f, accel_step = %5.2f", x_hi, x_start, accel_step);
+  ROS_INFO("z_hi = %5.2f, z_hi_degree = %5.2f, goal_bumper_turn = %d", z_hi, z_hi_degree, goal_bumper_turn);
+  ROS_INFO("loop_hz_origin = %5.1f, boost=%5.1f, loophz=%5.1f",loop_hz_origin, boost, loop_hz);
 
   while (ros::ok()){
 
     if ( back_turn ( ROOMBA_CLIFF, ROOMBA_LEFT_FRONT )){
-      ROS_INFO("ROOMBA_CLIFF, ROOMBA_LEFT_FRONT");
+      //ROS_INFO("ROOMBA_CLIFF, ROOMBA_LEFT_FRONT");
     }else if ( back_turn ( ROOMBA_CLIFF, ROOMBA_RIGHT_FRONT )){
-      ROS_INFO("ROOMBA_CLIFF, ROOMBA_RIGHT_FRONT");
+      //ROS_INFO("ROOMBA_CLIFF, ROOMBA_RIGHT_FRONT");
     }else if ( back_turn ( ROOMBA_CLIFF, ROOMBA_LEFT )){
-      ROS_INFO("ROOMBA_CLIFF, ROOMBA_LEFT");
+      //ROS_INFO("ROOMBA_CLIFF, ROOMBA_LEFT");
     }else if ( back_turn ( ROOMBA_CLIFF, ROOMBA_RIGHT )){
-      ROS_INFO("ROOMBA_CLIFF, ROOMBA_RIGHT");
+      //ROS_INFO("ROOMBA_CLIFF, ROOMBA_RIGHT");
     }else if ( back_turn ( ROOMBA_BUMPER, ROOMBA_LEFT )){
-      ROS_INFO("ROOMBA_BUMPER, ROOMBA_LEFT");
+      //ROS_INFO("ROOMBA_BUMPER, ROOMBA_LEFT");
     }else if ( back_turn ( ROOMBA_BUMPER, ROOMBA_RIGHT )){
-      ROS_INFO("ROOMBA_BUMPER, ROOMBA_RIGHT");
+      //ROS_INFO("ROOMBA_BUMPER, ROOMBA_RIGHT");
     }else{
       if ( wall_detect() ){
         data.linear.x = x_lo;
